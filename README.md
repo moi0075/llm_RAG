@@ -1,127 +1,64 @@
 # LLM RAG avec Ollama
 
-Système de Retrieval-Augmented Generation (RAG) utilisant Ollama et Gradio pour interroger des documents PDF avec des modèles de langage locaux.
+Système RAG (Retrieval-Augmented Generation) pour interroger des PDFs avec Ollama + Gradio.
 
-## Description
+## � Installation Rapide
 
-Ce projet permet d'interroger le contenu d'un document PDF en utilisant :
-
-- **Ollama** pour les modèles de langage locaux (deepseek-r1:1.5b, gemma3n:e2b)
-- **LangChain** pour le traitement des documents et la création d'embeddings
-- **ChromaDB** comme base de données vectorielle
-- **Gradio** pour l'interface utilisateur web
-
-## Fonctionnalités
-
-- 📄 Traitement automatique de documents PDF
-- 🔍 Recherche sémantique dans le contenu
-- 🤖 Réponses générées par des LLM locaux
-- 🌐 Interface web simple et intuitive
-- 💾 Base de données vectorielle persistante
-
-## Installation
-
-### Prérequis
-
-1. **Ollama** installé sur votre système
+1. **Ollama + Modèles**
 
    ```bash
-   # Installation d'Ollama (macOS)
+   # Installer Ollama
    curl -fsSL https://ollama.ai/install.sh | sh
-   ```
 
-2. **Modèles Ollama** requis
-   ```bash
-   ollama pull deepseek-r1:1.5b
+   # Télécharger les modèles
    ollama pull gemma3n:e2b
    ollama pull bge-m3
    ```
 
-### Dépendances Python
-
-```bash
-pip install ollama
-pip install langchain chromadb gradio
-pip install -U langchain-community
-pip install pymupdf
-```
-
-## Utilisation
-
-1. **Lancer le notebook**
-
+2. **Dépendances Python**
    ```bash
-   jupyter notebook main.ipynb
+   pip install ollama langchain chromadb gradio langchain-community pymupdf
    ```
 
-2. **Exécuter les cellules** dans l'ordre pour :
-
-   - Installer les dépendances
-   - Traiter votre document PDF
-   - Créer la base de données vectorielle
-   - Lancer l'interface Gradio
-
-3. **Utiliser l'interface web** pour poser des questions sur votre document
-
-## Structure du projet
+## 📁 Structure
 
 ```
 llm_RAG/
-├── main.ipynb              # Notebook principal
-├── README.md               # Documentation
-├── Rapport Alternance S6 - Téo Viglietti.pdf  # Document exemple
-└── chroma_db/              # Base de données vectorielle
-    ├── chroma.sqlite3
-    └── ec7953eb-c7f8-43e1-b5aa-e8dcea7dd548/
+├── main.ipynb          # Notebook principal
+├── pdf/               # Dossier contenant vos PDFs
+└── chroma_db/         # Base vectorielle (auto-générée)
 ```
 
-## Configuration
+## 🎯 Utilisation
 
-### Modèles utilisés
+1. **Placez vos PDFs** dans le dossier `./pdf/`
+2. **Exécutez le notebook** `main.ipynb` cellule par cellule
+3. **Utilisez l'interface Gradio** pour poser vos questions
 
-- **Embeddings** : `bge-m3` (via Ollama)
-- **Chat** : `deepseek-r1:1.5b` (tests)
-- **RAG** : `gemma3n:e2b` (réponses principales)
+## ⚙️ Fonctionnalités
 
-### Paramètres de chunking
+- 📄 **Multi-PDFs** : Traite automatiquement tous les PDFs du dossier
+- 🔍 **Recherche vectorielle** : ChromaDB + embeddings bge-m3
+- 🤖 **LLM local** : Réponses en français avec gemma3n:e2b
+- 🌐 **Interface web** : Gradio simple et intuitive
+- 💾 **Base persistante** : Pas besoin de retraiter à chaque fois
 
-- **Taille des chunks** : 500 caractères
-- **Overlap** : 100 caractères
-- **Nombre de documents récupérés** : 4
+## 🛠️ Configuration
 
-## Fonctionnement
+- **Chunks** : 500 caractères (overlap 100)
+- **Recherche** : 4 documents les plus pertinents
+- **Modèle** : gemma3n:e2b (français)
 
-1. **Traitement du PDF** : Le document est divisé en chunks avec PyMuPDF
-2. **Embeddings** : Conversion des chunks en vecteurs avec bge-m3
-3. **Stockage** : Sauvegarde dans ChromaDB
-4. **Recherche** : Récupération des passages pertinents
-5. **Génération** : Création de la réponse avec le contexte
-
-## Interface
-
-L'interface Gradio permet de :
-
-- Saisir une question en français
-- Recevoir une réponse basée sur le contenu du document
-- Historique des conversations
-
-## Exemple d'utilisation
+## 📝 Exemple
 
 ```python
-# Question sur le document
-question = "Application de suivi des tâches des RDG"
+# Traitement automatique des PDFs
+text_splitter, vectorstore, retriever = process_all_pdfs("./pdf")
 
-# Récupération des documents pertinents
+# Question
+question = "Quelle est la hauteur du platane ?"
 docs = retriever.get_relevant_documents(question, k=4)
-
-# Génération de la réponse
-response = ollama_llm(question, combined_text)
+response = ollama_llm(question, combine_docs(docs))
 ```
 
-## Auteur
-
-Téo Viglietti
-
-## Licence
-
-Ce projet est à des fins éducatives et de démonstration.
+**Auteur** : Téo Viglietti
